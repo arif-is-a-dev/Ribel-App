@@ -1,0 +1,8 @@
+arif,arifrharjo@gmail.com,111,190,80
+ebill,adisti@gmail.com,123,100,90
+kucing,halo@gmail.com,222,80,50
+halo,arifrharjo@gmail.com,555,0,0
+test,brahamtobias@gmail.com,123,0,0
+kipas,arifrharjo@gmail.com,666,0,0
+test1,arifrharjo@gmail.com,123,0,0
+test2,brahamtobias@gmail.com,123,120,30
