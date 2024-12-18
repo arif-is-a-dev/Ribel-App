@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
+    <title>Welcome to Ribel</title>
+</head>
+<body>
+    <main class="welcome-container">
+        <h1 class="welcome-heading">Welcome to Ribel</h1>
+        <img class="welcome-image" src="{{ url_for('static', filename='images/computer-13.svg') }}" alt="computer-13" width="150">
+        <nav class="button-container">
+            <a href="{{ url_for('login') }}" class="login-button" role="button">Log In</a>
+            <a href="{{ url_for('signup') }}" class="signup-button" role="button">Sign Up</a>
+        </nav>
+    </main>
+</body>
+</html>

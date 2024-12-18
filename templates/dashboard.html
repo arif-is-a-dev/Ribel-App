@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Pembelajaran</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="font-roboto bg-gray-100">
+    <header class="bg-blue-600 text-white p-4">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Dashboard Pembelajaran</h1>
+            <nav>
+                <ul class="flex space-x-4">
+                    <li><a class="hover:underline" href="{{url_for('logout')}}">Keluar</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4">
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">Hi! {{ username }}</h2>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">Skor Kamu</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-white p-4 rounded shadow">
+                    <h3 class="text-lg font-bold">Matematika</h3>
+                    <p class="text-gray-600">Skor: {{ scores.matematika }}</p>
+                </div>
+                <div class="bg-white p-4 rounded shadow">
+                    <h3 class="text-lg font-bold">Kosa Kata</h3>
+                    <p class="text-gray-600">Skor: {{ scores.kosakata }}</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-8">
+            <h2 class="text-xl font-bold mb-4">Pilih Materi</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <a href="{{ url_for('matematika') }}" class="block bg-white p-4 rounded shadow text-center">
+                    <img src="{{ url_for('static', filename='images/teacher-12.svg') }}" alt="Matematika" class="w-16 h-16 mx-auto mb-2">
+                    <h3 class="text-lg font-bold">Matematika</h3>
+                </a>
+                <a href="{{ url_for('kosakata') }}" class="block bg-white p-4 rounded shadow text-center">
+                    <img src="{{ url_for('static', filename='images/team-brainstorming-5-28.svg') }}" alt="Kosakata" class="w-16 h-16 mx-auto mb-2">
+                    <h3 class="text-lg font-bold">Kosa Kata</h3>
+                </a>
+            </div>
+        </section>
+
+        <section>
+            <h2 class="text-xl font-bold mb-4">Top Skor</h2>
+            <div class="bg-white p-4 rounded shadow">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr>
+                            <th class="border-b p-2">Nama</th>
+                            <th class="border-b p-2">Skor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for top_score in top_scores %}
+                        <tr>
+                            <td class="border-b p-2">{{ top_score.nama }}</td>
+                            <td class="border-b p-2">{{ top_score.skor }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-blue-600 text-white p-4 mt-8">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Ribel. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

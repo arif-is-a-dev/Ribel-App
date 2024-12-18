@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soal Matematika</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body class="bg-gray-100 font-roboto">
+    <div class="container mx-auto p-4">
+        <div class="max-w-2xl mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
+            <div class="bg-blue-500 p-6">
+                <h1 class="text-white text-3xl font-bold text-center">Soal Matematika</h1>
+            </div>
+            <div class="p-6">
+                {% if feedback %}
+                    <!-- Menampilkan feedback langsung di soal itu -->
+                    <div class="p-4 mb-4 text-white bg-blue-500 rounded-lg">
+                        {{ feedback }}
+                    </div>
+                {% endif %}
+
+                {% if question %}
+                    <p class="text-gray-700 text-lg text-center">{{ question.question }}</p>
+                    <form method="POST" class="mb-6">
+                        {% for option in question.options %}
+                            <label class="block w-full">
+                                <input type="radio" name="jawaban" value="{{ option }}" class="mr-2">
+                                {{ option }}
+                            </label>
+                        {% endfor %}
+                        <div class="mt-4 flex justify-end">
+                            {% if not feedback %}
+                                <button type="submit" class="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600">
+                                    Jawab
+                                </button>
+                            {% else %}
+                                <button type="submit" class="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600">
+                                    Lanjut ke Soal Berikutnya
+                                </button>
+                            {% endif %}
+                        </div>
+                    </form>
+                {% else %}
+                    <!-- Jika tidak ada soal -->
+                    <div class="p-4 text-center text-gray-500">
+                        Semua soal telah selesai. Kembali ke <a href="{{ url_for('dashboard') }}" class="text-blue-500 underline">Dashboard</a>.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
