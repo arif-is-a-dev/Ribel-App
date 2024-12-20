@@ -2,4 +2,3 @@ Berapakah hasil dari 2+2?;4;3;5;4
 Berapakah hasil dari 5x3?;15;10;20;15
 Berapakah hasil dari 12 x 3?;36;33;40;36
 Berapakah hasil dari 2+2?;4;3;5;4
-Berapakah hasil dari 5x3?;15;10;20;15
