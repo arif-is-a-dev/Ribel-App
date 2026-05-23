@@ -1,19 +1,52 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}">
-    <title>Welcome to Ribel</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ribel - Belajar Sambil Main</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}" />
 </head>
 <body>
-    <main class="welcome-container">
-        <h1 class="welcome-heading">Welcome to Ribel</h1>
-        <img class="welcome-image" src="{{ url_for('static', filename='images/computer-13.svg') }}" alt="computer-13" width="150">
-        <nav class="button-container">
-            <a href="{{ url_for('login') }}" class="login-button" role="button">Log In</a>
-            <a href="{{ url_for('signup') }}" class="signup-button" role="button">Sign Up</a>
-        </nav>
-    </main>
+  <main class="landing fade-up">
+    <span class="landing-eyebrow"><span class="dot"></span> Belajar jadi seru bareng Ribel</span>
+
+    <h1 class="landing-title">
+      Belajar santai,<br />
+      <span class="accent">main sambil pintar.</span>
+    </h1>
+
+    <p class="landing-sub">
+      Asah kemampuan Matematika dan Kosakata kamu lewat kuis interaktif yang ringan dan menyenangkan. Kumpulkan skor, naik peringkat, jadi yang terbaik!
+    </p>
+
+    <img class="landing-illustration" src="{{ url_for('static', filename='images/computer-13.svg') }}" alt="Ilustrasi komputer" />
+
+    <nav class="landing-actions">
+      <a href="{{ url_for('login') }}" class="btn btn-primary" role="button">Masuk</a>
+      <a href="{{ url_for('signup') }}" class="btn btn-ghost" role="button">Daftar Gratis</a>
+    </nav>
+
+    <div class="feature-row">
+      <div class="feature">
+        <div class="feature-icon" style="background: var(--primary-soft); color: var(--primary-dark);">🧮</div>
+        <h3>Matematika</h3>
+        <p>Latihan hitung dengan soal yang menantang tapi tetap fun.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon" style="background: #d1fae5; color: var(--mint-dark);">📚</div>
+        <h3>Kosakata</h3>
+        <p>Perbanyak kosakata Bahasa Indonesia dengan cara seru.</p>
+      </div>
+      <div class="feature">
+        <div class="feature-icon" style="background: #fff1d6; color: #b45309;">🏆</div>
+        <h3>Leaderboard</h3>
+        <p>Pantau skor kamu dan bersaing jadi top student.</p>
+      </div>
+    </div>
+  </main>
 </body>
 </html>
