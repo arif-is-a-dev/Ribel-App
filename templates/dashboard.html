@@ -1,84 +1,98 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Pembelajaran</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Ribel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
 </head>
-<body class="font-roboto bg-gray-100">
-    <header class="bg-blue-600 text-white p-4">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold">Dashboard Pembelajaran</h1>
-            <nav>
-                <ul class="flex space-x-4">
-                    <li><a class="hover:underline" href="{{url_for('logout')}}">Keluar</a></li>
-                </ul>
-            </nav>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a href="{{ url_for('dashboard') }}" class="brand">
+        <span class="brand-mark">R</span> Ribel
+      </a>
+      <a href="{{ url_for('logout') }}" class="btn btn-ghost" style="padding: 8px 18px; font-size: 0.9rem;">Keluar</a>
+    </div>
+  </header>
+
+  <main class="container fade-up">
+    <section class="hero">
+      <span class="pill">Dashboard</span>
+      <h1>Halo, {{ username }}! 👋</h1>
+      <p>Siap belajar lagi hari ini? Pilih materi di bawah dan tambahin skor kamu.</p>
+    </section>
+
+    <h2 class="section-title"><span class="icon">📊</span> Skor Kamu</h2>
+    <div class="score-grid">
+      <div class="score-card matematika">
+        <div class="ico">🧮</div>
+        <div>
+          <p class="label">Matematika</p>
+          <p class="value">{{ scores.matematika }}</p>
         </div>
-    </header>
-
-    <main class="container mx-auto p-4">
-        <section class="mb-8">
-            <h2 class="text-xl font-bold mb-4">Hi! {{ username }}</h2>
-        </section>
-
-        <section class="mb-8">
-            <h2 class="text-xl font-bold mb-4">Skor Kamu</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-white p-4 rounded shadow">
-                    <h3 class="text-lg font-bold">Matematika</h3>
-                    <p class="text-gray-600">Skor: {{ scores.matematika }}</p>
-                </div>
-                <div class="bg-white p-4 rounded shadow">
-                    <h3 class="text-lg font-bold">Kosa Kata</h3>
-                    <p class="text-gray-600">Skor: {{ scores.kosakata }}</p>
-                </div>
-            </div>
-        </section>
-
-        <section class="mb-8">
-            <h2 class="text-xl font-bold mb-4">Pilih Materi</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <a href="{{ url_for('matematika') }}" class="block bg-white p-4 rounded shadow text-center">
-                    <img src="{{ url_for('static', filename='images/teacher-12.svg') }}" alt="Matematika" class="w-16 h-16 mx-auto mb-2">
-                    <h3 class="text-lg font-bold">Matematika</h3>
-                </a>
-                <a href="{{ url_for('kosakata') }}" class="block bg-white p-4 rounded shadow text-center">
-                    <img src="{{ url_for('static', filename='images/team-brainstorming-5-28.svg') }}" alt="Kosakata" class="w-16 h-16 mx-auto mb-2">
-                    <h3 class="text-lg font-bold">Kosa Kata</h3>
-                </a>
-            </div>
-        </section>
-
-        <section>
-            <h2 class="text-xl font-bold mb-4">Top Skor</h2>
-            <div class="bg-white p-4 rounded shadow">
-                <table class="w-full text-left">
-                    <thead>
-                        <tr>
-                            <th class="border-b p-2">Nama</th>
-                            <th class="border-b p-2">Skor</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for top_score in top_scores %}
-                        <tr>
-                            <td class="border-b p-2">{{ top_score.nama }}</td>
-                            <td class="border-b p-2">{{ top_score.skor }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </section>
-    </main>
-
-    <footer class="bg-blue-600 text-white p-4 mt-8">
-        <div class="container mx-auto text-center">
-            <p>&copy; 2024 Ribel. All rights reserved.</p>
+      </div>
+      <div class="score-card kosakata">
+        <div class="ico">📚</div>
+        <div>
+          <p class="label">Kosakata</p>
+          <p class="value">{{ scores.kosakata }}</p>
         </div>
+      </div>
+      <div class="score-card" style="background: linear-gradient(135deg, #fff7ed, #ffedd5); border-color: transparent;">
+        <div class="ico" style="background: #fef3c7; color: #b45309;">⭐</div>
+        <div>
+          <p class="label">Total</p>
+          <p class="value">{{ scores.matematika + scores.kosakata }}</p>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title"><span class="icon">🎮</span> Pilih Materi</h2>
+    <div class="subject-grid">
+      <a href="{{ url_for('matematika') }}" class="subject-card mtk">
+        <img src="{{ url_for('static', filename='images/teacher-12.svg') }}" alt="Matematika" />
+        <h3>Matematika</h3>
+        <p>Asah logika dan kemampuan hitung kamu lewat soal seru.</p>
+        <span class="play">Mulai main</span>
+      </a>
+      <a href="{{ url_for('kosakata') }}" class="subject-card kosa">
+        <img src="{{ url_for('static', filename='images/team-brainstorming-5-28.svg') }}" alt="Kosakata" />
+        <h3>Kosakata</h3>
+        <p>Perkaya pembendaharaan kata Bahasa Indonesia kamu.</p>
+        <span class="play">Mulai main</span>
+      </a>
+    </div>
+
+    <h2 class="section-title"><span class="icon">🏆</span> Top Skor</h2>
+    <div class="leaderboard">
+      {% if top_scores and top_scores|length > 0 %}
+        {% for top_score in top_scores %}
+          {% set rank_class = 'gold' if loop.index == 1 else ('silver' if loop.index == 2 else ('bronze' if loop.index == 3 else '')) %}
+          {% set is_me = top_score.nama == username %}
+          <div class="lb-row {{ 'me' if is_me else '' }}">
+            <div class="lb-rank {{ rank_class }}">
+              {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% elif loop.index == 3 %}🥉{% else %}{{ loop.index }}{% endif %}
+            </div>
+            <div class="lb-name">
+              {{ top_score.nama }}
+              {% if is_me %}<span class="me-tag">Kamu</span>{% endif %}
+            </div>
+            <div class="lb-score">{{ top_score.skor }} pts</div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="lb-empty">Belum ada skor. Jadilah yang pertama! 🚀</div>
+      {% endif %}
+    </div>
+
+    <footer class="app-foot">
+      Dibuat dengan ❤️ &middot; Ribel &copy; 2024
     </footer>
+  </main>
 </body>
 </html>

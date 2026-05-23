@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ subject_label }} - Ribel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container topbar-inner">
+      <a href="{{ url_for('dashboard') }}" class="brand">
+        <span class="brand-mark">R</span> Ribel
+      </a>
+      <a href="{{ url_for('logout') }}" class="btn btn-ghost" style="padding: 8px 18px; font-size: 0.9rem;">Keluar</a>
+    </div>
+  </header>
+
+  <main class="quiz-shell">
+    <div class="quiz-head">
+      <a href="{{ url_for('dashboard') }}" class="back">← Kembali ke Dashboard</a>
+    </div>
+
+    <div class="quiz-card fade-up">
+      {# ============ FINISH SCREEN ============ #}
+      {% if finished %}
+        <div class="finish">
+          <span class="trophy">🎉</span>
+          <h2>Mantap! Kamu selesai.</h2>
+          <p class="text-soft">Sesi {{ subject_label }} udah beres. Skor kamu sudah otomatis tersimpan.</p>
+
+          {% if total > 0 %}
+            <div class="stats">
+              <div class="stat">
+                <div class="num">{{ session_correct or 0 }}/{{ total }}</div>
+                <div class="lbl">Benar</div>
+              </div>
+              <div class="stat">
+                <div class="num">+{{ session_score }}</div>
+                <div class="lbl">Poin Sesi Ini</div>
+              </div>
+            </div>
+          {% else %}
+            <p class="text-muted mt-4">Belum ada soal yang tersedia untuk materi ini.</p>
+          {% endif %}
+
+          <div class="finish-actions">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-ghost">Ke Dashboard</a>
+            {% if total > 0 %}
+              <form method="POST" style="display: inline;">
+                <input type="hidden" name="action" value="restart" />
+                <button type="submit" class="btn btn-primary">Main Lagi</button>
+              </form>
+            {% endif %}
+          </div>
+        </div>
+
+      {# ============ FEEDBACK SCREEN ============ #}
+      {% elif show_next and feedback %}
+        <div class="quiz-meta">
+          <span class="pill">{{ subject_label }}</span>
+          <span class="score-pill">+{{ session_score }} pts</span>
+        </div>
+        <div class="progress" aria-label="Progress">
+          <span style="width: {{ ((current_num / total) * 100) | round(0, 'floor') }}%"></span>
+        </div>
+
+        <div class="feedback {{ 'correct' if last_correct else 'wrong' }}">
+          <span class="emoji">{{ '🎊' if last_correct else '😅' }}</span>
+          <h2>{{ 'Benar!' if last_correct else 'Belum tepat' }}</h2>
+          <p>{{ feedback }}</p>
+        </div>
+
+        <div class="quiz-actions">
+          <form method="POST">
+            <input type="hidden" name="action" value="next" />
+            <button type="submit" class="btn btn-primary">
+              {% if current_num >= total %}Lihat Hasil →{% else %}Soal Berikutnya →{% endif %}
+            </button>
+          </form>
+        </div>
+
+      {# ============ QUESTION SCREEN ============ #}
+      {% elif question %}
+        <div class="quiz-meta">
+          <span class="pill">{{ subject_label }}</span>
+          <span class="text-muted" style="font-weight: 600; font-size: 0.9rem;">
+            Soal {{ current_num }} dari {{ total }}
+          </span>
+        </div>
+        <div class="progress" aria-label="Progress">
+          <span style="width: {{ (((current_num - 1) / total) * 100) | round(0, 'floor') }}%"></span>
+        </div>
+
+        <p class="question-text">{{ question.question }}</p>
+
+        {% if error %}
+          <div class="alert alert-error mb-4">⚠️ {{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+          <input type="hidden" name="action" value="answer" />
+          <div class="options">
+            {% for option in question.options %}
+              <label class="option">
+                <span class="marker">{{ ['A','B','C','D','E','F'][loop.index0] }}</span>
+                <input type="radio" name="jawaban" value="{{ option }}" required />
+                <span>{{ option }}</span>
+              </label>
+            {% endfor %}
+          </div>
+
+          <div class="quiz-actions">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-ghost">Batal</a>
+            <button type="submit" class="btn btn-primary">Jawab</button>
+          </div>
+        </form>
+      {% endif %}
+    </div>
+  </main>
+</body>
+</html>
