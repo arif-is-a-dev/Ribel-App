@@ -2,6 +2,9 @@ PROTOTIPE PROJECT UAS PEMROGRAMAN DASAR
 
 Aplikasi kuis belajar (Matematika dan Kosakata) berbasis Flask dengan penyimpanan SQLite.
 
+## Demo Website
+https://bit.ly/Ribel
+
 ## Struktur Proyek
 
 - `app.py` - titik masuk aplikasi.
