@@ -1,219 +1,723 @@
-/* ====== Quiz page ====== */
-.quiz-shell {
-  max-width: 720px;
-  margin: 0 auto;
-  padding: 24px 20px 60px;
+/* ==========================================================================
+   Kuis dan hasil kuis - "Studio Editorial"
+   Hanya dimuat oleh templates/quiz.html. Seluruh warna, spasi, dan tipografi
+   diambil dari design token di base.css (tidak ada token yang diduplikasi).
+   Header memakai partial bersama "partials/_nav_app.html", sehingga gaya
+   .app-bar berasal dari dashboard.css yang juga dimuat halaman ini.
+   ========================================================================== */
+
+/* Latar cream dan teks charcoal khusus halaman kuis. */
+body.page-quiz {
+  background: var(--color-background);
+  color: var(--color-text);
 }
 
-.quiz-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 16px;
+/* Gradien dekoratif lama tidak dipakai di halaman kuis. */
+body.page-quiz::before {
+  display: none;
 }
-.quiz-head .back {
+
+/* ---------- Kerangka halaman ---------- */
+.quiz-main {
+  padding-block: clamp(var(--space-6), 4vw, var(--space-12)) var(--space-16);
+}
+
+/* Lebih sempit dari kontainer umum supaya soal tetap fokus. */
+.quiz-shell {
+  max-width: var(--container-narrow);
+  margin-inline: auto;
+}
+
+.quiz-crumb {
+  margin: 0 0 var(--space-5);
+}
+
+.quiz-crumb__link {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  border-bottom: var(--border-width-base) solid transparent;
+  transition: color var(--motion-fast), border-color var(--motion-fast);
+}
+.quiz-crumb__link:hover {
+  color: var(--color-ink);
+  border-bottom-color: var(--color-accent);
+}
+
+/* Panel utama: permukaan putih dengan garis aksen mustard di atas. */
+.quiz-panel {
+  background: var(--color-surface);
+  border: var(--border-width-hairline) solid var(--color-border);
+  border-top: var(--border-width-bold) solid var(--color-accent);
+  border-radius: var(--corner-sm);
+  padding: clamp(var(--space-6), 4vw, var(--space-10));
+}
+
+/* ---------- Info sesi ---------- */
+.quiz-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3) var(--space-4);
+}
+
+.quiz-chip {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  font-weight: 600;
-  color: var(--text-soft);
-  font-size: 0.95rem;
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-primary-soft);
+  color: var(--color-primary-strong);
+  border-radius: var(--corner-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
 }
-.quiz-head .back:hover { color: var(--primary); }
 
-.quiz-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 32px;
-  box-shadow: var(--shadow);
+.quiz-meta__count {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.quiz-progress {
+  height: 8px;
+  margin: var(--space-4) 0 var(--space-8);
+  background: var(--color-surface-muted);
+  border-radius: var(--corner-round);
+  overflow: hidden;
+}
+
+.quiz-progress__fill {
+  display: block;
+  height: 100%;
+  background: var(--color-primary);
+  transition: width var(--motion-base);
+}
+
+/* ---------- Teks soal ---------- */
+.quiz-question {
+  margin: 0 0 var(--space-8);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: clamp(var(--font-size-lg), 2.6vw, var(--font-size-2xl));
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  overflow-wrap: break-word;
+}
+
+.quiz-alert {
+  margin-bottom: var(--space-6);
+}
+
+/* ---------- Pilihan jawaban ---------- */
+.quiz-fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.quiz-options {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.quiz-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-surface);
+  /* Border memakai warna teks sekunder supaya batas baris pilihan tetap
+     >= 3:1 terhadap latar putih (WCAG 1.4.11), sama seperti .se-input. */
+  border: var(--border-width-base) solid var(--color-text-muted);
+  border-radius: var(--corner-sm);
+  cursor: pointer;
+  transition: border-color var(--motion-fast), background-color var(--motion-fast);
+}
+
+.quiz-option:hover {
+  border-color: var(--color-ink);
+  background: var(--color-surface-muted);
+}
+
+/* Radio asli disembunyikan secara visual tetapi tetap fokusabel,
+   supaya seluruh pilihan dapat dipakai dengan keyboard. */
+.quiz-option__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* Cincin fokus digambar pada baris pilihan, bukan pada radio 1px. */
+.quiz-option:focus-within {
+  outline: var(--border-width-bold) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Penanda pilihan terpilih: bentuk kotak tegas, bukan lingkaran. */
+.quiz-option__marker {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+  background: var(--color-surface);
+  border: var(--border-width-hairline) solid var(--color-text-muted);
+  border-radius: var(--corner-sm);
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+}
+
+/* Status terpilih tidak bergantung pada :has() supaya tetap terlihat
+   di peramban lama: penanda berubah warna lewat selektor bersaudara. */
+.quiz-option__input:checked + .quiz-option__marker {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #ffffff;
+}
+
+.quiz-option:has(.quiz-option__input:checked) {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+.quiz-option__text {
+  font-size: var(--font-size-base);
+  line-height: var(--leading-normal);
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+/* ---------- Tombol aksi ---------- */
+.quiz-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  margin-top: var(--space-8);
+}
+
+.quiz-actions--center {
+  justify-content: center;
+}
+
+/* ---------- Umpan balik benar/salah ---------- */
+.quiz-verdict {
+  padding: clamp(var(--space-5), 4vw, var(--space-8));
+  background: var(--color-surface);
+  border: var(--border-width-hairline) solid var(--color-border);
+  border-left: var(--border-width-bold) solid var(--color-ink);
+  border-radius: var(--corner-sm);
+}
+
+.quiz-verdict--correct {
+  background: var(--color-success-surface);
+  border-color: var(--color-success);
+  border-left-color: var(--color-success);
+}
+
+.quiz-verdict--wrong {
+  background: var(--color-error-surface);
+  border-color: var(--color-error);
+  border-left-color: var(--color-error);
+}
+
+/* Label teks: status benar/salah tidak hanya dibedakan lewat warna. */
+.quiz-verdict__tag {
+  margin: 0 0 var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-ink);
+}
+
+.quiz-verdict__title {
+  margin: 0 0 var(--space-2);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: clamp(var(--font-size-xl), 3vw, var(--font-size-2xl));
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+}
+
+.quiz-verdict__text {
+  margin: 0;
+  font-size: var(--font-size-md);
+  line-height: var(--leading-normal);
+  color: var(--color-ink);
+}
+
+.quiz-verdict--correct .quiz-verdict__tag,
+.quiz-verdict--correct .quiz-verdict__title {
+  color: var(--color-success);
+}
+
+.quiz-verdict--wrong .quiz-verdict__tag,
+.quiz-verdict--wrong .quiz-verdict__title {
+  color: var(--color-error);
+}
+
+/* ---------- Layar hasil ---------- */
+.quiz-panel__title {
+  margin: var(--space-4) 0 var(--space-3);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: clamp(var(--font-size-xl), 4vw, var(--font-size-3xl));
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  overflow-wrap: break-word;
+}
+
+.quiz-panel__text {
+  margin: 0;
+  max-width: 52ch;
+  font-size: var(--font-size-md);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted);
+}
+
+.quiz-stats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(var(--space-6), 4vw, var(--space-10));
+  margin: var(--space-8) 0 0;
+}
+
+.quiz-stat {
+  padding-top: var(--space-4);
+  border-top: var(--border-width-bold) solid var(--color-ink);
+}
+
+.quiz-stat__label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.quiz-stat__value {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  line-height: 1;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.quiz-note {
+  margin: var(--space-6) 0 0;
+  max-width: 52ch;
+  font-size: var(--font-size-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Responsif ---------- */
+@media (max-width: 640px) {
+  .quiz-panel {
+    padding: var(--space-6) var(--space-5);
+  }
+  .quiz-question {
+    margin-bottom: var(--space-6);
+  }
+  .quiz-option {
+    gap: var(--space-3);
+    padding: var(--space-4);
+  }
+  /* Tombol ditumpuk penuh supaya mudah ditekan di layar sentuh. */
+  .quiz-actions {
+    flex-direction: column;
+    align-items: stretch;
+    margin-top: var(--space-6);
+  }
+  .quiz-actions .se-btn {
+    width: 100%;
+  }
+  .quiz-stats {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-5);
+  }
+}
+
+/* ---------- Hormati preferensi pengguna ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .page-quiz *,
+  .page-quiz *::before,
+  .page-quiz *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ==========================================================================
+   Fase 5 - permainan interaktif: timer, booster, combo, dan animasi.
+   Seluruh warna tetap memakai design token dari base.css.
+   ========================================================================== */
+
+/* Token lokal halaman kuis untuk status peringatan. Mustard gelap dipakai
+   supaya teks tetap >= 4.5:1 di atas latar cream maupun putih. */
+body.page-quiz {
+  --quiz-warning: #8A6100;
+  --quiz-warning-surface: #FBEEC9;
+}
+
+/* ---------- Notifikasi booster ---------- */
+.quiz-notice {
+  margin: 0 0 var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  background: var(--quiz-warning-surface);
+  border-left: var(--border-width-bold) solid var(--color-accent-strong);
+  border-radius: var(--corner-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
+}
+
+/* ---------- Timer per soal ---------- */
+.quiz-timer {
+  margin: var(--space-4) 0 var(--space-6);
+}
+
+.quiz-timer__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.quiz-timer__label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.quiz-timer__value {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.quiz-timer__track {
+  height: 10px;
+  margin-top: var(--space-2);
+  background: var(--color-surface-muted);
+  border: var(--border-width-hairline) solid var(--color-border);
+  border-radius: var(--corner-round);
+  overflow: hidden;
+}
+
+.quiz-timer__bar {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: var(--color-primary);
+  transition: width 220ms linear, background-color var(--motion-base);
+}
+
+/* Peringatan waktu hampir habis: warna berubah dan nilai berdenyut halus. */
+.quiz-timer.is-warning .quiz-timer__bar {
+  background: var(--quiz-warning);
+}
+
+.quiz-timer.is-warning .quiz-timer__value {
+  color: var(--quiz-warning);
+  animation: quizPulse 1s ease-in-out infinite;
+}
+
+@keyframes quizPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+/* ---------- Toolbar skill ---------- */
+/* Toolbar kecil di bawah area jawaban: empat skill tampil sebagai tombol
+   pendek, bukan kartu besar, supaya soal tetap menjadi fokus utama. */
+.quiz-skillbar {
+  position: relative;
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: var(--border-width-hairline) solid var(--color-border);
+}
+
+.quiz-skillbar__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-1) var(--space-4);
+}
+
+.quiz-skillbar__title {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.quiz-skillbar__note {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.quiz-skillbar__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin: var(--space-3) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.quiz-skill {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  min-width: 0;
+}
+
+.quiz-skill__form {
+  margin: 0;
+}
+
+.quiz-skill__button {
+  min-height: 2.75rem;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-surface);
+  color: var(--color-primary-strong);
+  border: var(--border-width-base) solid var(--color-primary);
+  border-radius: var(--corner-sm);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background-color var(--motion-fast), color var(--motion-fast),
+    transform var(--motion-fast);
+}
+
+.quiz-skill__button:hover:not(:disabled) {
+  background: var(--color-primary);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+.quiz-skill__button:focus-visible {
+  outline: var(--border-width-bold) solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+.quiz-skill__button:disabled {
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  border-color: var(--color-border);
+  border-style: dashed;
+  cursor: not-allowed;
+}
+
+/* Skill yang sudah dipakai tetap terbaca sebagai tombol, bukan ikon mati. */
+.quiz-skill--used .quiz-skill__button {
+  background: var(--color-surface-muted);
+  color: var(--color-text-muted);
+  border-color: var(--color-border-strong);
+}
+
+/* Status dibedakan dengan teks, bukan hanya warna. */
+.quiz-skill__state {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+/* Deskripsi skill: tooltip ringan tanpa JavaScript, muncul saat tombol
+   disorot atau difokuskan. Ditempel pada lebar toolbar supaya tidak pernah
+   keluar dari area panel (tidak menimbulkan scroll horizontal). */
+.quiz-skill__tip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  margin: var(--space-2) 0 0;
+  padding: var(--space-2) var(--space-3);
+  background: var(--color-ink);
+  color: var(--color-text-inverse);
+  border-radius: var(--corner-sm);
+  font-size: var(--font-size-xs);
+  line-height: var(--leading-snug);
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity var(--motion-fast), transform var(--motion-fast);
+}
+
+.quiz-skill:hover .quiz-skill__tip,
+.quiz-skill:focus-within .quiz-skill__tip {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- Combo, lencana, dan petunjuk ---------- */
+.quiz-combo {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-5);
+  padding: var(--space-1) var(--space-3);
+  background: var(--color-ink);
+  color: var(--color-text-inverse);
+  border-radius: var(--corner-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  animation: quizPop var(--motion-base) ease-out both;
+}
+
+.quiz-combo__value {
+  font-size: var(--font-size-sm);
+}
+
+@keyframes quizPop {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.quiz-badge {
+  display: inline-block;
+  margin: 0 0 var(--space-5);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--corner-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.quiz-badge--double {
+  background: var(--color-accent);
+  color: var(--color-ink);
+}
+
+.quiz-hint {
+  margin: var(--space-4) 0 var(--space-5);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Umpan balik poin ---------- */
+.quiz-verdict__points {
+  display: inline-block;
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-success);
+  animation: quizBump var(--motion-base) ease-out both;
+}
+
+@keyframes quizBump {
+  from { transform: translateY(6px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ---------- Interaksi pilihan jawaban ---------- */
+.quiz-option.is-chosen {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+  animation: quizPop 160ms ease-out both;
+}
+
+.quiz-option__input:checked + .quiz-option__marker {
+  animation: quizPop 160ms ease-out both;
+}
+
+.quiz-form.is-sending .quiz-options {
+  opacity: 0.75;
+}
+
+/* ---------- Layar hasil ---------- */
+.quiz-panel--result {
   position: relative;
   overflow: hidden;
 }
 
-.quiz-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 18px;
-  flex-wrap: wrap;
-}
-.quiz-meta .pill { background: var(--primary-soft); color: var(--primary-dark); }
-.quiz-meta .score-pill {
-  background: var(--success-soft);
-  color: var(--success);
+.quiz-stat__value--small {
+  font-size: var(--font-size-lg);
 }
 
-/* Progress bar */
-.progress {
-  width: 100%;
-  height: 10px;
-  background: var(--border);
-  border-radius: var(--radius-pill);
-  overflow: hidden;
-  margin-bottom: 28px;
-}
-.progress > span {
-  display: block;
-  height: 100%;
-  background: linear-gradient(90deg, var(--primary), var(--mint));
-  border-radius: var(--radius-pill);
-  transition: width 0.5s ease;
+.quiz-result__last {
+  margin: var(--space-5) 0 0;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
 }
 
-.question-text {
-  font-size: 1.35rem;
-  font-weight: 700;
-  line-height: 1.4;
-  color: var(--text);
-  margin-bottom: 24px;
-  letter-spacing: -0.01em;
+.quiz-confetti {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
 }
 
-/* Options */
-.options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 24px; }
-
-.option {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 16px 18px;
-  background: var(--surface-soft);
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  cursor: pointer;
-  transition: all var(--transition);
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--text);
-}
-.option:hover {
-  border-color: var(--primary);
-  background: var(--primary-soft);
-  transform: translateX(2px);
-}
-.option input { display: none; }
-
-.option .marker {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: 2px solid var(--border-strong);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  background: #fff;
-  transition: all var(--transition);
-  flex-shrink: 0;
-}
-.option:has(input:checked) {
-  border-color: var(--primary);
-  background: var(--primary-soft);
-  box-shadow: 0 4px 14px rgba(124, 92, 255, 0.18);
-}
-.option:has(input:checked) .marker {
-  background: var(--primary);
-  color: #fff;
-  border-color: var(--primary);
+.quiz-confetti__piece {
+  position: absolute;
+  top: -14px;
+  width: 8px;
+  height: 14px;
+  border-radius: 2px;
+  opacity: 0.9;
+  animation: quizFall 2s ease-in forwards;
 }
 
-/* Feedback panel */
-.feedback {
-  border-radius: var(--radius);
-  padding: 24px;
-  text-align: center;
-  margin-bottom: 22px;
-}
-.feedback .emoji {
-  font-size: 3rem;
-  margin-bottom: 8px;
-  display: block;
-  animation: pop 0.45s ease-out;
-}
-.feedback h2 {
-  font-size: 1.4rem;
-  margin: 0 0 8px;
-}
-.feedback p { margin: 0; }
-
-.feedback.correct {
-  background: var(--success-soft);
-  color: var(--success);
-}
-.feedback.correct h2,
-.feedback.correct p { color: #047857; }
-
-.feedback.wrong {
-  background: var(--error-soft);
-  color: var(--error);
-}
-.feedback.wrong h2,
-.feedback.wrong p { color: #b91c1c; }
-
-/* Actions */
-.quiz-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: flex-end;
-  flex-wrap: wrap;
+@keyframes quizFall {
+  from { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+  to { transform: translateY(380px) rotate(320deg); opacity: 0; }
 }
 
-/* Finish screen */
-.finish {
-  text-align: center;
-  padding: 16px 0 8px;
-}
-.finish .trophy {
-  font-size: 4rem;
-  margin-bottom: 8px;
-  display: block;
-  animation: pop 0.5s ease-out;
-}
-.finish h2 {
-  font-size: 1.8rem;
-  margin: 0 0 8px;
-}
-.finish .stats {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-  margin: 24px 0;
-  flex-wrap: wrap;
-}
-.finish .stat {
-  background: var(--surface-soft);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 16px 24px;
-  min-width: 120px;
-}
-.finish .stat .num {
-  font-size: 1.8rem;
-  font-weight: 800;
-  color: var(--primary);
-  letter-spacing: -0.02em;
-}
-.finish .stat .lbl {
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--text-muted);
-  font-weight: 600;
-}
-.finish-actions {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-top: 12px;
-}
-
-@media (max-width: 600px) {
-  .quiz-card { padding: 22px; }
-  .question-text { font-size: 1.15rem; }
+/* ---------- Responsif ---------- */
+@media (max-width: 480px) {
+  .quiz-skillbar__list {
+    gap: var(--space-2);
+  }
+  .quiz-skill__button {
+    padding: var(--space-2);
+    font-size: var(--font-size-xs);
+  }
+  .quiz-skill__state {
+    font-size: 0.7rem;
+  }
+  .quiz-timer__value {
+    font-size: var(--font-size-base);
+  }
 }

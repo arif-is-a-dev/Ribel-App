@@ -1,0 +1,22 @@
+{# Header bersama untuk halaman yang sudah login (dashboard, kuis). #}
+<header class="app-bar">
+  <div class="se-container app-bar__inner">
+    <a class="se-brand" href="{{ url_for('main.dashboard') }}">
+      <span class="se-brand-mark" aria-hidden="true">R</span>
+      <span>Ribel</span>
+    </a>
+
+    <nav class="app-bar__nav" aria-label="Navigasi utama">
+      <a class="app-bar__link" href="{{ url_for('practice.matematika') }}">Matematika</a>
+      <a class="app-bar__link" href="{{ url_for('practice.kosakata') }}">Kosakata</a>
+    </nav>
+
+    <div class="app-bar__actions">
+      <p class="app-bar__user">Halo, {{ username }}</p>
+      <form method="post" action="{{ url_for('auth.logout') }}">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+        <button type="submit" class="se-btn se-btn--secondary se-btn--sm">Keluar</button>
+      </form>
+    </div>
+  </div>
+</header>

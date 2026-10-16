@@ -1,98 +1,103 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dashboard - Ribel</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Ribel{% endblock %}
+{% block body_class %}page-app{% endblock %}
+
+{% block styles %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
-</head>
-<body>
-  <header class="topbar">
-    <div class="container topbar-inner">
-      <a href="{{ url_for('dashboard') }}" class="brand">
-        <span class="brand-mark">R</span> Ribel
-      </a>
-      <a href="{{ url_for('logout') }}" class="btn btn-ghost" style="padding: 8px 18px; font-size: 0.9rem;">Keluar</a>
+{% endblock %}
+
+{% block header %}{% include "partials/_nav_app.html" %}{% endblock %}
+
+{% block content %}
+<main id="konten" class="app-main">
+
+  <section class="app-welcome">
+    <div class="se-container">
+      <p class="se-eyebrow">Dashboard</p>
+      <h1 class="app-welcome__title">Siap melanjutkan latihan?</h1>
+      <p class="app-welcome__text">
+        Pilih materi di bawah untuk menambah skor Matematika atau Kosakata milikmu.
+      </p>
     </div>
-  </header>
+  </section>
 
-  <main class="container fade-up">
-    <section class="hero">
-      <span class="pill">Dashboard</span>
-      <h1>Halo, {{ username }}! 👋</h1>
-      <p>Siap belajar lagi hari ini? Pilih materi di bawah dan tambahin skor kamu.</p>
-    </section>
-
-    <h2 class="section-title"><span class="icon">📊</span> Skor Kamu</h2>
-    <div class="score-grid">
-      <div class="score-card matematika">
-        <div class="ico">🧮</div>
-        <div>
-          <p class="label">Matematika</p>
-          <p class="value">{{ scores.matematika }}</p>
+  <section class="app-section" aria-labelledby="judul-skor">
+    <div class="se-container">
+      <h2 class="app-section__title" id="judul-skor">Skor kamu</h2>
+      <dl class="app-scores">
+        <div class="app-score">
+          <dt class="app-score__label">Matematika</dt>
+          <dd class="app-score__value">{{ scores.matematika }}</dd>
         </div>
-      </div>
-      <div class="score-card kosakata">
-        <div class="ico">📚</div>
-        <div>
-          <p class="label">Kosakata</p>
-          <p class="value">{{ scores.kosakata }}</p>
+        <div class="app-score">
+          <dt class="app-score__label">Kosakata</dt>
+          <dd class="app-score__value">{{ scores.kosakata }}</dd>
         </div>
-      </div>
-      <div class="score-card" style="background: linear-gradient(135deg, #fff7ed, #ffedd5); border-color: transparent;">
-        <div class="ico" style="background: #fef3c7; color: #b45309;">⭐</div>
-        <div>
-          <p class="label">Total</p>
-          <p class="value">{{ scores.matematika + scores.kosakata }}</p>
+        <div class="app-score app-score--total">
+          <dt class="app-score__label">Total</dt>
+          <dd class="app-score__value">{{ scores.matematika + scores.kosakata }}</dd>
         </div>
-      </div>
+      </dl>
+      <p class="app-note">Setiap jawaban benar menambah poin ke skor materi terkait.</p>
     </div>
+  </section>
 
-    <h2 class="section-title"><span class="icon">🎮</span> Pilih Materi</h2>
-    <div class="subject-grid">
-      <a href="{{ url_for('matematika') }}" class="subject-card mtk">
-        <img src="{{ url_for('static', filename='images/teacher-12.svg') }}" alt="Matematika" />
-        <h3>Matematika</h3>
-        <p>Asah logika dan kemampuan hitung kamu lewat soal seru.</p>
-        <span class="play">Mulai main</span>
-      </a>
-      <a href="{{ url_for('kosakata') }}" class="subject-card kosa">
-        <img src="{{ url_for('static', filename='images/team-brainstorming-5-28.svg') }}" alt="Kosakata" />
-        <h3>Kosakata</h3>
-        <p>Perkaya pembendaharaan kata Bahasa Indonesia kamu.</p>
-        <span class="play">Mulai main</span>
-      </a>
+  <section class="app-section" aria-labelledby="judul-materi">
+    <div class="se-container">
+      <h2 class="app-section__title" id="judul-materi">Pilih materi</h2>
+      <ul class="app-subjects">
+        <li>
+          <a class="app-subject app-subject--mtk" href="{{ url_for('practice.matematika') }}">
+            <h3 class="app-subject__title">Matematika</h3>
+            <p class="app-subject__desc">
+              Soal hitung pilihan ganda. Jawaban yang benar ditampilkan saat kamu keliru.
+            </p>
+            <span class="app-subject__cta">Mulai latihan</span>
+          </a>
+        </li>
+        <li>
+          <a class="app-subject app-subject--kosa" href="{{ url_for('practice.kosakata') }}">
+            <h3 class="app-subject__title">Kosakata</h3>
+            <p class="app-subject__desc">
+              Soal pilihan ganda untuk memperkaya kosakata Bahasa Indonesia.
+            </p>
+            <span class="app-subject__cta">Mulai latihan</span>
+          </a>
+        </li>
+      </ul>
     </div>
+  </section>
 
-    <h2 class="section-title"><span class="icon">🏆</span> Top Skor</h2>
-    <div class="leaderboard">
-      {% if top_scores and top_scores|length > 0 %}
-        {% for top_score in top_scores %}
-          {% set rank_class = 'gold' if loop.index == 1 else ('silver' if loop.index == 2 else ('bronze' if loop.index == 3 else '')) %}
-          {% set is_me = top_score.nama == username %}
-          <div class="lb-row {{ 'me' if is_me else '' }}">
-            <div class="lb-rank {{ rank_class }}">
-              {% if loop.index == 1 %}🥇{% elif loop.index == 2 %}🥈{% elif loop.index == 3 %}🥉{% else %}{{ loop.index }}{% endif %}
-            </div>
-            <div class="lb-name">
-              {{ top_score.nama }}
-              {% if is_me %}<span class="me-tag">Kamu</span>{% endif %}
-            </div>
-            <div class="lb-score">{{ top_score.skor }} pts</div>
-          </div>
-        {% endfor %}
+  <section class="app-section" aria-labelledby="judul-papan">
+    <div class="se-container">
+      <h2 class="app-section__title" id="judul-papan">Papan skor</h2>
+      {% if top_scores %}
+        <ol class="app-board">
+          {% for baris in top_scores %}
+            <li class="app-board__row{% if baris.nama == username %} app-board__row--me{% endif %}">
+              <span class="app-board__rank">{{ loop.index }}</span>
+              <span class="app-board__name">
+                {{ baris.nama }}
+                {% if baris.nama == username %}<span class="app-board__tag">Kamu</span>{% endif %}
+              </span>
+              <span class="app-board__score">{{ baris.skor }} poin</span>
+            </li>
+          {% endfor %}
+        </ol>
       {% else %}
-        <div class="lb-empty">Belum ada skor. Jadilah yang pertama! 🚀</div>
+        <p class="app-note">Belum ada skor tercatat. Mulai satu sesi latihan untuk mengisi papan skor.</p>
       {% endif %}
     </div>
+  </section>
 
-    <footer class="app-foot">
-      Dibuat dengan ❤️ &middot; Ribel &copy; 2024
-    </footer>
-  </main>
-</body>
-</html>
+</main>
+{% endblock %}
+
+{% block footer %}
+<footer class="app-foot">
+  <div class="se-container app-foot__inner">
+    <p class="app-foot__copy">&copy; 2026 Ribel</p>
+  </div>
+</footer>
+{% endblock %}

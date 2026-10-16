@@ -1,251 +1,346 @@
-/* ====== Dashboard ====== */
-.hero {
-  background: linear-gradient(135deg, #7c5cff 0%, #5eead4 100%);
-  color: #fff;
-  padding: 36px 32px;
-  border-radius: var(--radius-lg);
-  position: relative;
-  overflow: hidden;
-  margin: 24px 0;
-  box-shadow: var(--shadow);
+/* ==========================================================================
+   Dashboard - "Studio Editorial"
+   Hanya dimuat oleh templates/dashboard.html (dan header partial _nav_app).
+   Warna, spasi, dan tipografi diambil dari design token di base.css.
+   ========================================================================== */
+
+/* Latar cream dan teks charcoal khusus halaman aplikasi. */
+body.page-app {
+  background: var(--color-background);
+  color: var(--color-text);
 }
-.hero::after {
-  content: "";
-  position: absolute;
-  right: -60px;
-  bottom: -60px;
-  width: 220px;
-  height: 220px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.12);
+
+/* Gradien dekoratif lama tidak dipakai di dashboard. */
+body.page-app::before {
+  display: none;
 }
-.hero::before {
-  content: "";
-  position: absolute;
-  right: 80px;
-  top: -40px;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.10);
+
+/* ---------- Bar aplikasi ---------- */
+.app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--color-background);
+  border-bottom: var(--border-width-hairline) solid var(--color-border);
 }
-.hero h1 {
-  color: #fff;
-  font-size: clamp(1.6rem, 3vw, 2.2rem);
-  margin-bottom: 8px;
-  letter-spacing: -0.02em;
+
+.app-bar__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
 }
-.hero p {
-  color: rgba(255, 255, 255, 0.92);
+
+.app-bar__nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.app-bar__link {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  border-bottom: var(--border-width-base) solid transparent;
+  transition: color var(--motion-fast), border-color var(--motion-fast);
+}
+.app-bar__link:hover {
+  color: var(--color-ink);
+  border-bottom-color: var(--color-accent);
+}
+
+.app-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.app-bar__user {
   margin: 0;
-  max-width: 520px;
-}
-.hero .pill {
-  background: rgba(255, 255, 255, 0.22);
-  color: #fff;
-  margin-bottom: 14px;
-}
-
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 1.25rem;
-  font-weight: 700;
-  margin: 32px 0 16px;
-}
-.section-title .icon {
-  font-size: 1.3rem;
+  min-width: 0;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
 }
 
-/* Score cards */
-.score-grid {
+/* ---------- Area sambutan ---------- */
+.app-welcome {
+  padding-block: clamp(var(--space-10), 6vw, var(--space-16));
+}
+
+.app-welcome__title {
+  margin: var(--space-5) 0 var(--space-4);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: clamp(1.9rem, 4vw, 3rem);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+  overflow-wrap: break-word;
+}
+
+.app-welcome__text {
+  margin: 0;
+  max-width: 56ch;
+  font-size: var(--font-size-md);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Section umum ---------- */
+.app-section {
+  padding-block: clamp(var(--space-8), 4.5vw, var(--space-12));
+  border-top: var(--border-width-hairline) solid var(--color-border);
+}
+
+.app-section__title {
+  margin: 0 0 var(--space-6);
+  font-family: var(--font-display);
+  font-weight: var(--font-weight-bold);
+  font-size: clamp(1.35rem, 2.6vw, 1.85rem);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-ink);
+}
+
+.app-note {
+  margin: var(--space-6) 0 0;
+  max-width: 56ch;
+  font-size: var(--font-size-sm);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Ringkasan skor ---------- */
+.app-scores {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(var(--space-6), 4vw, var(--space-10));
+  margin: 0;
 }
-.score-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 22px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--transition), box-shadow var(--transition);
+
+.app-score {
+  padding-top: var(--space-4);
+  border-top: var(--border-width-bold) solid var(--color-ink);
 }
-.score-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow);
+
+.app-score--total {
+  border-top-color: var(--color-primary);
 }
-.score-card .ico {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.6rem;
-  flex-shrink: 0;
-}
-.score-card.matematika .ico {
-  background: linear-gradient(135deg, #ece6ff, #d6c9ff);
-  color: var(--primary-dark);
-}
-.score-card.kosakata .ico {
-  background: linear-gradient(135deg, #d1fae5, #a7f3d0);
-  color: var(--mint-dark);
-}
-.score-card .label {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-  font-weight: 600;
+
+.app-score__label {
+  font-family: var(--font-body);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin: 0;
-}
-.score-card .value {
-  font-size: 1.8rem;
-  font-weight: 800;
-  margin: 2px 0 0;
-  letter-spacing: -0.02em;
-  color: var(--text);
+  color: var(--color-text-muted);
 }
 
-/* Subject cards */
-.subject-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 18px;
+.app-score__value {
+  margin: var(--space-2) 0 0;
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 4.4vw, 2.75rem);
+  line-height: 1;
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
 }
-.subject-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 24px;
+
+.app-score--total .app-score__value {
+  color: var(--color-primary);
+}
+
+/* ---------- Pilihan materi ---------- */
+.app-subjects {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(var(--space-4), 3vw, var(--space-6));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.app-subject {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 12px;
-  position: relative;
-  overflow: hidden;
-  transition: transform var(--transition), box-shadow var(--transition),
-              border-color var(--transition);
+  gap: var(--space-3);
+  height: 100%;
+  padding: clamp(var(--space-6), 3.5vw, var(--space-8));
+  border: var(--border-width-base) solid var(--color-ink);
+  border-radius: var(--corner-sm);
   text-decoration: none;
+  transition: transform var(--motion-base), box-shadow var(--motion-base);
+}
+
+.app-subject:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--elevation-md);
+}
+
+.app-subject:focus-visible {
+  outline: var(--border-width-bold) solid var(--color-focus);
+  outline-offset: 3px;
+}
+
+/* Matematika: blok cobalt dengan teks putih. */
+.app-subject--mtk {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+/* Kosakata: blok mustard dengan teks charcoal. */
+.app-subject--kosa {
+  background: var(--color-accent);
+  color: var(--color-ink);
+}
+
+.app-subject__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-xl);
+  line-height: var(--leading-snug);
+  letter-spacing: var(--tracking-tight);
   color: inherit;
 }
-.subject-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, transparent 60%, var(--accent-bg, rgba(124,92,255,0.08)));
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity var(--transition);
-}
-.subject-card:hover {
-  transform: translateY(-4px);
-  box-shadow: var(--shadow);
-  border-color: var(--border-strong);
-  color: inherit;
-}
-.subject-card:hover::before { opacity: 1; }
 
-.subject-card.mtk { --accent-bg: rgba(124, 92, 255, 0.10); }
-.subject-card.kosa { --accent-bg: rgba(94, 234, 212, 0.18); }
+.app-subject__desc {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: var(--leading-normal);
+}
 
-.subject-card img {
-  width: 84px;
-  height: 84px;
+.app-subject--mtk .app-subject__desc {
+  color: var(--color-primary-soft);
 }
-.subject-card h3 {
-  font-size: 1.2rem;
-  margin: 0;
-}
-.subject-card p {
-  font-size: 0.95rem;
-  margin: 0;
-  color: var(--text-soft);
-}
-.subject-card .play {
+
+.app-subject__cta {
   margin-top: auto;
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-weight: 700;
-  color: var(--primary);
-  font-size: 0.95rem;
-}
-.subject-card .play::after {
-  content: "→";
-  transition: transform var(--transition);
-}
-.subject-card:hover .play::after {
-  transform: translateX(4px);
+  padding-top: var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
-/* Leaderboard */
-.leaderboard {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px;
-  box-shadow: var(--shadow-sm);
+.app-subject--mtk .app-subject__cta {
+  text-decoration-color: var(--color-accent);
 }
-.lb-row {
+
+.app-subject--kosa .app-subject__cta {
+  text-decoration-color: var(--color-ink);
+}
+
+/* ---------- Papan skor ---------- */
+.app-board {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: var(--border-width-hairline) solid var(--color-border-strong);
+}
+
+.app-board__row {
   display: grid;
-  grid-template-columns: 56px 1fr auto;
+  grid-template-columns: 2.5rem minmax(0, 1fr) auto;
   align-items: center;
-  gap: 14px;
-  padding: 14px 16px;
-  border-radius: var(--radius-sm);
-  transition: background var(--transition);
-}
-.lb-row + .lb-row { margin-top: 4px; }
-.lb-row:hover { background: var(--surface-soft); }
-.lb-row.me {
-  background: var(--primary-soft);
-}
-.lb-rank {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 800;
-  font-size: 0.95rem;
-  background: var(--surface-soft);
-  color: var(--text-soft);
-  border: 1px solid var(--border);
-}
-.lb-rank.gold   { background: linear-gradient(135deg, #fde68a, #f59e0b); color: #fff; border-color: transparent; }
-.lb-rank.silver { background: linear-gradient(135deg, #e5e7eb, #9ca3af); color: #fff; border-color: transparent; }
-.lb-rank.bronze { background: linear-gradient(135deg, #fdba74, #c2410c); color: #fff; border-color: transparent; }
-.lb-name { font-weight: 600; color: var(--text); }
-.lb-name .me-tag {
-  font-size: 0.75rem;
-  background: var(--primary);
-  color: #fff;
-  padding: 2px 8px;
-  border-radius: var(--radius-pill);
-  margin-left: 6px;
-  font-weight: 700;
-}
-.lb-score {
-  font-weight: 800;
-  color: var(--text);
-}
-.lb-empty {
-  padding: 20px;
-  text-align: center;
-  color: var(--text-muted);
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-2);
+  border-bottom: var(--border-width-hairline) solid var(--color-border);
 }
 
-footer.app-foot {
-  margin: 48px 0 24px;
-  text-align: center;
-  color: var(--text-muted);
-  font-size: 0.9rem;
+.app-board__row--me {
+  background: var(--color-accent-soft);
+}
+
+.app-board__rank {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.app-board__row--me .app-board__rank {
+  color: var(--color-ink);
+}
+
+.app-board__name {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.app-board__tag {
+  padding: 0.1rem var(--space-2);
+  background: var(--color-ink);
+  color: var(--color-background);
+  border-radius: var(--corner-sm);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.app-board__score {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- Footer ---------- */
+.app-foot {
+  border-top: var(--border-width-hairline) solid var(--color-border);
+}
+
+.app-foot__inner {
+  padding-block: var(--space-6);
+}
+
+.app-foot__copy {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+/* ---------- Responsif ---------- */
+@media (max-width: 900px) {
+  .app-subjects {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 640px) {
+  .app-bar .se-brand {
+    order: 1;
+  }
+  .app-bar__actions {
+    order: 2;
+  }
+  .app-bar__nav {
+    order: 3;
+    flex-basis: 100%;
+    gap: var(--space-5);
+  }
+  .app-scores {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-6);
+  }
+}
+
+/* ---------- Hormati preferensi pengguna ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .page-app *,
+  .page-app *::before,
+  .page-app *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }

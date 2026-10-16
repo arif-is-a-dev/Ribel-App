@@ -1,52 +1,155 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ribel - Belajar Sambil Main</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+{% extends "base.html" %}
+
+{% block title %}Ribel - Latihan Matematika dan Kosakata{% endblock %}
+{% block body_class %}page-landing{% endblock %}
+
+{% block styles %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/landing.css') }}" />
-</head>
-<body>
-  <main class="landing fade-up">
-    <span class="landing-eyebrow"><span class="dot"></span> Belajar jadi seru bareng Ribel</span>
+{% endblock %}
 
-    <h1 class="landing-title">
-      Belajar santai,<br />
-      <span class="accent">main sambil pintar.</span>
-    </h1>
+{% block header %}{% include "partials/_nav_public.html" %}{% endblock %}
 
-    <p class="landing-sub">
-      Asah kemampuan Matematika dan Kosakata kamu lewat kuis interaktif yang ringan dan menyenangkan. Kumpulkan skor, naik peringkat, jadi yang terbaik!
-    </p>
+{% block content %}
+<main id="konten">
 
-    <img class="landing-illustration" src="{{ url_for('static', filename='images/computer-13.svg') }}" alt="Ilustrasi komputer" />
-
-    <nav class="landing-actions">
-      <a href="{{ url_for('login') }}" class="btn btn-primary" role="button">Masuk</a>
-      <a href="{{ url_for('signup') }}" class="btn btn-ghost" role="button">Daftar Gratis</a>
-    </nav>
-
-    <div class="feature-row">
-      <div class="feature">
-        <div class="feature-icon" style="background: var(--primary-soft); color: var(--primary-dark);">🧮</div>
-        <h3>Matematika</h3>
-        <p>Latihan hitung dengan soal yang menantang tapi tetap fun.</p>
+  {# ---------- Hero ---------- #}
+  <section class="se-hero">
+    <div class="se-container se-hero__grid">
+      <div class="se-hero__copy">
+        <p class="se-eyebrow">Latihan Matematika &amp; Kosakata</p>
+        <h1 class="se-hero__title">
+          Latihan <em>Matematika</em> dan <em>Kosakata</em> dalam satu tempat.
+        </h1>
+        <p class="se-hero__lede">
+          Ribel menyusun soal latihan jadi sesi pendek yang mudah diikuti. Jawab satu per
+          satu, lihat jawaban yang benar saat kamu keliru, lalu biarkan skormu bertambah.
+        </p>
+        <div class="se-hero__actions">
+          <a class="se-btn se-btn--primary" href="{{ url_for('auth.signup') }}">Mulai belajar</a>
+          <a class="se-btn se-btn--secondary" href="{{ url_for('auth.login') }}">Saya sudah punya akun</a>
+        </div>
+        <p class="se-hero__note">Gratis. Buat akun, lalu pilih materi dari dashboard.</p>
       </div>
-      <div class="feature">
-        <div class="feature-icon" style="background: #d1fae5; color: var(--mint-dark);">📚</div>
-        <h3>Kosakata</h3>
-        <p>Perbanyak kosakata Bahasa Indonesia dengan cara seru.</p>
-      </div>
-      <div class="feature">
-        <div class="feature-icon" style="background: #fff1d6; color: #b45309;">🏆</div>
-        <h3>Leaderboard</h3>
-        <p>Pantau skor kamu dan bersaing jadi top student.</p>
+
+      {# Komposisi grafis CSS, murni dekoratif. #}
+      <div class="se-art" aria-hidden="true">
+        <span class="se-art__circle"></span>
+        <span class="se-art__block"></span>
+        <span class="se-art__rule"></span>
+        <span class="se-art__chip">Matematika &middot; Kosakata</span>
       </div>
     </div>
-  </main>
-</body>
-</html>
+  </section>
+
+  {# ---------- Fitur yang benar-benar tersedia ---------- #}
+  <section class="se-section se-section--tint" id="fitur">
+    <div class="se-container">
+      <div class="se-section__head">
+        <h2 class="se-section__title">Yang bisa kamu latih</h2>
+        <p class="se-section__lede">
+          Dua materi, satu alur latihan yang sederhana. Tidak ada yang perlu diatur dulu.
+        </p>
+      </div>
+
+      <ul class="se-features">
+        <li class="se-feature">
+          <span class="se-feature__index">01</span>
+          <h3 class="se-feature__title">Matematika</h3>
+          <p class="se-feature__text">
+            Soal hitung pilihan ganda. Kalau jawabanmu belum tepat, jawaban yang benar
+            langsung ditampilkan sebelum kamu lanjut.
+          </p>
+        </li>
+        <li class="se-feature">
+          <span class="se-feature__index">02</span>
+          <h3 class="se-feature__title">Kosakata</h3>
+          <p class="se-feature__text">
+            Perluas kosakata Bahasa Indonesia lewat soal pilihan ganda yang ringkas dan
+            mudah diulang kapan saja.
+          </p>
+        </li>
+        <li class="se-feature">
+          <span class="se-feature__index">03</span>
+          <h3 class="se-feature__title">Skor tersimpan</h3>
+          <p class="se-feature__text">
+            Setiap jawaban benar menambah skor Matematika atau Kosakata milikmu, dan
+            tersimpan di akunmu untuk sesi berikutnya.
+          </p>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  {# ---------- Cara kerja ---------- #}
+  <section class="se-section" id="cara-kerja">
+    <div class="se-container">
+      <div class="se-section__head">
+        <h2 class="se-section__title">Tiga langkah, lalu mulai</h2>
+        <p class="se-section__lede">Tidak ada tes penempatan dan tidak ada yang rumit.</p>
+      </div>
+
+      <ol class="se-steps">
+        <li class="se-step">
+          <span class="se-step__num">01</span>
+          <h3 class="se-step__title">Buat akun</h3>
+          <p class="se-step__text">Cukup username, email, dan password. Gratis.</p>
+        </li>
+        <li class="se-step">
+          <span class="se-step__num">02</span>
+          <h3 class="se-step__title">Pilih materi</h3>
+          <p class="se-step__text">Buka Matematika atau Kosakata dari dashboard.</p>
+        </li>
+        <li class="se-step">
+          <span class="se-step__num">03</span>
+          <h3 class="se-step__title">Jawab dan ulangi</h3>
+          <p class="se-step__text">Selesaikan satu sesi, lalu ulangi untuk menambah skor.</p>
+        </li>
+      </ol>
+    </div>
+  </section>
+
+  {# ---------- Penutup editorial (tanpa tombol autentikasi berulang) ---------- #}
+  <section class="se-closing">
+    <div class="se-container se-closing__inner">
+      <p class="se-eyebrow">Belajar mandiri</p>
+      <p class="se-closing__statement">
+        Latihan yang cukup singkat untuk dikerjakan hari ini, dan cukup konsisten
+        untuk diulang besok.
+      </p>
+      <span class="se-closing__rule" aria-hidden="true"></span>
+    </div>
+  </section>
+
+</main>
+{% endblock %}
+
+{% block footer %}
+<footer class="se-footer">
+  <div class="se-container se-footer__inner">
+    <div class="se-footer__col">
+      <p class="se-footer__brand">
+        <span class="se-brand-mark" aria-hidden="true">R</span>
+        <span>Ribel</span>
+      </p>
+    </div>
+
+    <div class="se-footer__col">
+      <p class="se-footer__text">
+        Ribel adalah aplikasi latihan Matematika dan Kosakata untuk belajar mandiri.
+      </p>
+    </div>
+
+    <nav class="se-footer__nav" aria-label="Navigasi footer">
+      <h2 class="se-footer__heading">Jelajahi</h2>
+      <ul class="se-footer__links">
+        <li><a href="#fitur">Fitur</a></li>
+        <li><a href="#cara-kerja">Cara kerja</a></li>
+      </ul>
+    </nav>
+  </div>
+
+  <div class="se-container se-footer__bottom">
+    <p class="se-footer__copy">&copy; 2026 Ribel</p>
+  </div>
+</footer>
+{% endblock %}
