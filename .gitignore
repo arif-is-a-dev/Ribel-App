@@ -1,0 +1,25 @@
+# Rahasia dan data sensitif - JANGAN di-commit
+users.txt
+.env
+.env.*
+!.env.example
+
+# Database lokal
+*.sqlite
+*.sqlite3
+*.db
+
+# Database runtime aplikasi
+instance/
+
+# Cache dan artefak Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Lingkungan virtual
+.venv/
+venv/
+
+# Cadangan data lama
+legacy/

@@ -1,0 +1,6 @@
+soal_mtk.txt:1;6
+soal_mtk.txt:2;25
+soal_mtk.txt:3;39
+soal_kosakata.txt:1;trotoar
+soal_kosakata.txt:2;palu
+soal_kosakata.txt:3;penggaris

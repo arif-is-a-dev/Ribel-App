@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}Ribel{% endblock %}</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  {# Fondasi desain: design token dan komponen dasar. #}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+  {% block styles %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="se-skip-link" href="#konten">Lewati ke konten utama</a>
+
+  {#
+    Header bersifat opsional. Halaman yang membutuhkan navigasi mengisi block
+    ini, misalnya dengan partial bersama "partials/_nav_public.html".
+  #}
+  {% block header %}{% endblock %}
+
+  {% block content %}{% endblock %}
+
+  {% block footer %}{% endblock %}
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

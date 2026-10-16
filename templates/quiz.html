@@ -1,126 +1,271 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>{{ subject_label }} - Ribel</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+{% extends "base.html" %}
+
+{% block title %}{{ subject_label }} - Ribel{% endblock %}
+{% block body_class %}page-quiz{% endblock %}
+
+{#
+  Header memakai partial bersama "partials/_nav_app.html" supaya identitas,
+  navigasi, dan tombol keluar sama persis dengan Dashboard. Gaya .app-bar
+  berasal dari dashboard.css (partial yang sama juga memakainya).
+#}
+{% block styles %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}" />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/quiz.css') }}" />
-</head>
-<body>
-  <header class="topbar">
-    <div class="container topbar-inner">
-      <a href="{{ url_for('dashboard') }}" class="brand">
-        <span class="brand-mark">R</span> Ribel
-      </a>
-      <a href="{{ url_for('logout') }}" class="btn btn-ghost" style="padding: 8px 18px; font-size: 0.9rem;">Keluar</a>
-    </div>
-  </header>
+{% endblock %}
 
-  <main class="quiz-shell">
-    <div class="quiz-head">
-      <a href="{{ url_for('dashboard') }}" class="back">← Kembali ke Dashboard</a>
-    </div>
+{% block header %}{% include "partials/_nav_app.html" %}{% endblock %}
 
-    <div class="quiz-card fade-up">
-      {# ============ FINISH SCREEN ============ #}
-      {% if finished %}
-        <div class="finish">
-          <span class="trophy">🎉</span>
-          <h2>Mantap! Kamu selesai.</h2>
-          <p class="text-soft">Sesi {{ subject_label }} udah beres. Skor kamu sudah otomatis tersimpan.</p>
+{#
+  Toolbar skill dipakai di layar soal dan layar umpan balik. Setiap tombol
+  adalah form POST terpisah dengan token CSRF, dan server yang memutuskan
+  apakah booster benar-benar aktif. Tombolnya kecil dan ringkas; deskripsi
+  lengkap tiap skill hanya muncul lewat tooltip saat tombol disorot atau
+  difokuskan, supaya soal dan pilihan jawaban tetap menjadi fokus utama.
+#}
+{% macro booster_panel(boosters) %}
+  {% if boosters %}
+    <section class="quiz-skillbar" aria-labelledby="judul-skill">
+      <div class="quiz-skillbar__head">
+        <h2 class="quiz-skillbar__title" id="judul-skill">Skill</h2>
+        <p class="quiz-skillbar__note">Sekali pakai per sesi.</p>
+      </div>
+      <ul class="quiz-skillbar__list">
+        {% for booster in boosters %}
+          <li class="quiz-skill quiz-skill--{{ booster.state }}">
+            <form class="quiz-skill__form" method="post">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <input type="hidden" name="action" value="booster" />
+              <input type="hidden" name="booster" value="{{ booster.name }}" />
+              <button
+                type="submit"
+                class="quiz-skill__button"
+                {% if not booster.enabled %}disabled{% endif %}
+                title="{{ booster.hint }}{% if booster.note and not booster.enabled %} {{ booster.note }}{% endif %}"
+                aria-describedby="skill-tip-{{ booster.name }}"
+              >{{ booster.label }}</button>
+            </form>
+            <p class="quiz-skill__state">
+              {%- if booster.state == 'used' -%}
+                Terpakai
+              {%- elif booster.enabled -%}
+                Siap
+              {%- else -%}
+                Nonaktif
+              {%- endif -%}
+            </p>
+            <p class="quiz-skill__tip" id="skill-tip-{{ booster.name }}">
+              {{ booster.hint }}{% if booster.note and not booster.enabled %} {{ booster.note }}{% endif %}
+            </p>
+          </li>
+        {% endfor %}
+      </ul>
+    </section>
+  {% endif %}
+{% endmacro %}
 
-          {% if total > 0 %}
-            <div class="stats">
-              <div class="stat">
-                <div class="num">{{ session_correct or 0 }}/{{ total }}</div>
-                <div class="lbl">Benar</div>
-              </div>
-              <div class="stat">
-                <div class="num">+{{ session_score }}</div>
-                <div class="lbl">Poin Sesi Ini</div>
-              </div>
+{% block content %}
+<main id="konten" class="quiz-main">
+  <div class="se-container quiz-shell">
+
+    {% if not finished %}
+      <p class="quiz-crumb">
+        <a class="quiz-crumb__link" href="{{ url_for('main.dashboard') }}">Kembali ke dashboard</a>
+      </p>
+    {% endif %}
+
+    {% if notice %}
+      <p class="quiz-notice" role="status">{{ notice }}</p>
+    {% endif %}
+
+    {% if finished %}
+      {# ============ LAYAR HASIL ============ #}
+      <section class="quiz-panel quiz-panel--result" aria-labelledby="judul-selesai" data-quiz-result>
+        <p class="se-eyebrow">Latihan {{ subject_label }}</p>
+        <h1 class="quiz-panel__title" id="judul-selesai">Mantap! Kamu selesai.</h1>
+        <p class="quiz-panel__text">
+          Sesi {{ subject_label }} sudah beres. Skor kamu sudah otomatis tersimpan.
+        </p>
+
+        {% if total > 0 %}
+          <dl class="quiz-stats">
+            <div class="quiz-stat">
+              <dt class="quiz-stat__label">Benar</dt>
+              <dd class="quiz-stat__value">{{ session_correct or 0 }}/{{ total }}</dd>
             </div>
-          {% else %}
-            <p class="text-muted mt-4">Belum ada soal yang tersedia untuk materi ini.</p>
-          {% endif %}
-
-          <div class="finish-actions">
-            <a href="{{ url_for('dashboard') }}" class="btn btn-ghost">Ke Dashboard</a>
-            {% if total > 0 %}
-              <form method="POST" style="display: inline;">
-                <input type="hidden" name="action" value="restart" />
-                <button type="submit" class="btn btn-primary">Main Lagi</button>
-              </form>
+            <div class="quiz-stat">
+              <dt class="quiz-stat__label">Poin sesi ini</dt>
+              <dd class="quiz-stat__value quiz-stat__value--score">+{{ session_score }}</dd>
+            </div>
+            {% if best_streak_final > 0 %}
+              <div class="quiz-stat">
+                <dt class="quiz-stat__label">Combo terbaik</dt>
+                <dd class="quiz-stat__value">{{ best_streak_final }}x</dd>
+              </div>
             {% endif %}
-          </div>
+            {% if booster_used %}
+              <div class="quiz-stat">
+                <dt class="quiz-stat__label">Booster terpakai</dt>
+                <dd class="quiz-stat__value quiz-stat__value--small">
+                  {% for name in booster_used %}{{ booster_labels.get(name, name) }}{{ ', ' if not loop.last }}{% endfor %}
+                </dd>
+              </div>
+            {% endif %}
+          </dl>
+
+          {% if last_correct is not none %}
+            <p class="quiz-result__last">
+              Soal terakhir kamu: <strong>{{ 'benar' if last_correct else 'belum tepat' }}</strong>.
+            </p>
+          {% endif %}
+        {% else %}
+          <p class="quiz-note">Belum ada soal yang tersedia untuk materi ini.</p>
+        {% endif %}
+
+        <div class="quiz-actions quiz-actions--center">
+          <a class="se-btn se-btn--secondary" href="{{ url_for('main.dashboard') }}">Ke dashboard</a>
+          {% if total > 0 %}
+            <form method="post">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+              <input type="hidden" name="action" value="restart" />
+              <button type="submit" class="se-btn se-btn--primary">Main lagi</button>
+            </form>
+          {% endif %}
         </div>
 
-      {# ============ FEEDBACK SCREEN ============ #}
-      {% elif show_next and feedback %}
+        <div class="quiz-confetti" data-confetti aria-hidden="true"></div>
+      </section>
+
+    {% elif show_next and feedback %}
+      {# ============ LAYAR UMPAN BALIK ============ #}
+      <section class="quiz-panel" aria-labelledby="judul-umpan">
         <div class="quiz-meta">
-          <span class="pill">{{ subject_label }}</span>
-          <span class="score-pill">+{{ session_score }} pts</span>
+          <span class="quiz-chip">{{ subject_label }}</span>
+          <span class="quiz-meta__count">Skor sesi: +{{ session_score }} poin</span>
         </div>
-        <div class="progress" aria-label="Progress">
-          <span style="width: {{ ((current_num / total) * 100) | round(0, 'floor') }}%"></span>
+        <div class="quiz-progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ total }}" aria-valuenow="{{ current_num }}" aria-label="Kemajuan kuis">
+          <span class="quiz-progress__fill" style="width: {{ ((current_num / total) * 100) | round(0, 'floor') }}%"></span>
         </div>
 
-        <div class="feedback {{ 'correct' if last_correct else 'wrong' }}">
-          <span class="emoji">{{ '🎊' if last_correct else '😅' }}</span>
-          <h2>{{ 'Benar!' if last_correct else 'Belum tepat' }}</h2>
-          <p>{{ feedback }}</p>
+        {% if last_correct and combo > 1 %}
+          <p class="quiz-combo" data-combo>
+            <span class="quiz-combo__label">Combo</span>
+            <span class="quiz-combo__value">{{ combo }}x</span>
+          </p>
+        {% endif %}
+
+        <div class="quiz-verdict {{ 'quiz-verdict--correct' if last_correct else 'quiz-verdict--wrong' }}">
+          <p class="quiz-verdict__tag">{{ 'Jawaban benar' if last_correct else ('Waktu habis' if timed_out else 'Jawaban belum tepat') }}</p>
+          <h1 class="quiz-verdict__title" id="judul-umpan">
+            {{ 'Benar!' if last_correct else ('Waktu habis' if timed_out else 'Belum tepat') }}
+          </h1>
+          <p class="quiz-verdict__text">{{ feedback }}</p>
+          {% if last_correct and last_points %}
+            <p class="quiz-verdict__points">+{{ last_points }} poin</p>
+          {% endif %}
         </div>
+
+        {{ booster_panel(boosters) }}
 
         <div class="quiz-actions">
-          <form method="POST">
+          <form method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
             <input type="hidden" name="action" value="next" />
-            <button type="submit" class="btn btn-primary">
-              {% if current_num >= total %}Lihat Hasil →{% else %}Soal Berikutnya →{% endif %}
+            <button type="submit" class="se-btn se-btn--primary">
+              {% if current_num >= total %}Lihat hasil{% else %}Soal Berikutnya{% endif %}
             </button>
           </form>
         </div>
+      </section>
 
-      {# ============ QUESTION SCREEN ============ #}
-      {% elif question %}
+    {% elif question %}
+      {# ============ LAYAR SOAL ============ #}
+      <section class="quiz-panel" aria-labelledby="judul-soal">
         <div class="quiz-meta">
-          <span class="pill">{{ subject_label }}</span>
-          <span class="text-muted" style="font-weight: 600; font-size: 0.9rem;">
-            Soal {{ current_num }} dari {{ total }}
-          </span>
+          <span class="quiz-chip">{{ subject_label }}</span>
+          <span class="quiz-meta__count">Soal {{ current_num }} dari {{ total }}</span>
         </div>
-        <div class="progress" aria-label="Progress">
-          <span style="width: {{ (((current_num - 1) / total) * 100) | round(0, 'floor') }}%"></span>
+        <div class="quiz-progress" role="progressbar" aria-valuemin="0" aria-valuemax="{{ total }}" aria-valuenow="{{ current_num - 1 }}" aria-label="Kemajuan kuis">
+          <span class="quiz-progress__fill" style="width: {{ (((current_num - 1) / total) * 100) | round(0, 'floor') }}%"></span>
         </div>
 
-        <p class="question-text">{{ question.question }}</p>
+        <div class="quiz-timer" data-quiz-timer data-remaining="{{ remaining }}" data-total="{{ timer_seconds }}">
+          <div class="quiz-timer__head">
+            <span class="quiz-timer__label" id="label-timer">Sisa waktu</span>
+            <span class="quiz-timer__value" data-timer-value aria-live="off">{{ remaining | round(0, 'ceil') | int }} detik</span>
+          </div>
+          <div class="quiz-timer__track" aria-hidden="true">
+            <span class="quiz-timer__bar" data-timer-bar style="width: {{ ((remaining / timer_seconds) * 100) | round(1) }}%"></span>
+          </div>
+          <p class="se-visually-hidden" aria-live="polite" data-timer-announce></p>
+        </div>
 
-        {% if error %}
-          <div class="alert alert-error mb-4">⚠️ {{ error }}</div>
+        {% if combo > 1 %}
+          <p class="quiz-combo" data-combo>
+            <span class="quiz-combo__label">Combo</span>
+            <span class="quiz-combo__value">{{ combo }}x</span>
+          </p>
         {% endif %}
 
-        <form method="POST">
-          <input type="hidden" name="action" value="answer" />
-          <div class="options">
-            {% for option in question.options %}
-              <label class="option">
-                <span class="marker">{{ ['A','B','C','D','E','F'][loop.index0] }}</span>
-                <input type="radio" name="jawaban" value="{{ option }}" required />
-                <span>{{ option }}</span>
-              </label>
-            {% endfor %}
+        <h1 class="quiz-question" id="judul-soal">{{ question.question }}</h1>
+
+        {% if double_armed %}
+          <p class="quiz-badge quiz-badge--double">Double Points aktif untuk soal ini.</p>
+        {% endif %}
+
+        {% if error %}
+          <div class="se-alert se-alert--error quiz-alert" role="alert">
+            <span class="se-alert__label">Jawaban belum dipilih</span>
+            <p class="se-alert__text">{{ error }}</p>
           </div>
+        {% endif %}
+
+        {% if hidden_options %}
+          <p class="quiz-hint">50:50 aktif, dua pilihan yang salah sudah disembunyikan.</p>
+        {% endif %}
+
+        <form class="quiz-form" method="post" data-quiz-form>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="action" value="answer" />
+
+          <fieldset class="quiz-fieldset">
+            <legend class="se-visually-hidden">Pilih satu jawaban</legend>
+            <div class="quiz-options">
+              {% set letters = ['A','B','C','D','E','F','G','H'] %}
+              {% for option in question.options %}
+                {% if option not in hidden_options %}
+                  <label class="quiz-option">
+                    <input class="quiz-option__input" type="radio" name="jawaban" value="{{ option }}" required />
+                    <span class="quiz-option__marker" aria-hidden="true">{{ letters[loop.index0] if loop.index0 < letters | length else loop.index0 + 1 }}</span>
+                    <span class="quiz-option__text">{{ option }}</span>
+                  </label>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </fieldset>
 
           <div class="quiz-actions">
-            <a href="{{ url_for('dashboard') }}" class="btn btn-ghost">Batal</a>
-            <button type="submit" class="btn btn-primary">Jawab</button>
+            <a class="se-btn se-btn--secondary" href="{{ url_for('main.dashboard') }}">Kembali ke dashboard</a>
+            <button type="submit" class="se-btn se-btn--primary" data-submit>Kirim jawaban</button>
           </div>
         </form>
-      {% endif %}
-    </div>
-  </main>
-</body>
-</html>
+
+        {# Toolbar skill berada di bawah area jawaban supaya soal dan pilihan
+           jawaban tetap menjadi fokus utama. #}
+        {{ booster_panel(boosters) }}
+
+        {# Dikirim JavaScript ketika hitung mundur habis. Server tetap yang
+           memutuskan apakah waktu benar-benar sudah lewat. #}
+        <form class="quiz-timeout-form" method="post" data-timeout-form hidden>
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+          <input type="hidden" name="action" value="timeout" />
+        </form>
+      </section>
+    {% endif %}
+
+  </div>
+</main>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{{ url_for('static', filename='js/quiz.js') }}" defer></script>
+{% endblock %}

@@ -1,57 +1,73 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Daftar - Ribel</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}" />
+{% extends "base.html" %}
+
+{% block title %}Daftar - Ribel{% endblock %}
+{% block body_class %}page-auth{% endblock %}
+
+{% block styles %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/auth.css') }}" />
-</head>
-<body>
-  <main class="center-screen">
-    <div class="auth-grid fade-up">
-      <div class="auth-illustration">
-        <img src="{{ url_for('static', filename='images/start-up-45.svg') }}" alt="Mulai" />
-        <h2>Mulai petualanganmu!</h2>
-        <p>Daftar gratis dan jadi yang teratas di leaderboard Ribel.</p>
-      </div>
+{% endblock %}
 
-      <div class="auth-card">
-        <a href="{{ url_for('home') }}" class="brand-link">
-          <span class="brand-mark">R</span> Ribel
-        </a>
+{% block header %}
+<header class="auth-bar">
+  <div class="se-container auth-bar__inner">
+    <a class="se-brand" href="{{ url_for('main.home') }}">
+      <span class="se-brand-mark" aria-hidden="true">R</span>
+      <span>Ribel</span>
+    </a>
+    <a class="auth-bar__back" href="{{ url_for('main.home') }}">Kembali ke beranda</a>
+  </div>
+</header>
+{% endblock %}
 
-        <h1>Buat akun baru</h1>
-        <p class="sub">Cepet kok, cuma butuh beberapa detik ✨</p>
-
-        {% if error %}
-          <div class="alert alert-error mb-4">⚠️ {{ error }}</div>
-        {% endif %}
-
-        <form action="{{ url_for('signup') }}" method="POST" class="form-stack">
-          <div class="field">
-            <label for="username">Username</label>
-            <input class="input" type="text" id="username" name="username" placeholder="cth: budi123" required autofocus />
-          </div>
-          <div class="field">
-            <label for="email">Email</label>
-            <input class="input" type="email" id="email" name="email" placeholder="kamu@email.com" required />
-          </div>
-          <div class="field">
-            <label for="password">Password</label>
-            <input class="input" type="password" id="password" name="password" placeholder="Minimal 4 karakter" required minlength="4" />
-          </div>
-          <button type="submit" class="btn btn-primary btn-block">Daftar Sekarang</button>
-        </form>
-
-        <p class="auth-foot">
-          Sudah punya akun? <a href="{{ url_for('login') }}">Masuk di sini</a>
-        </p>
-      </div>
+{% block content %}
+<main id="konten" class="auth-shell">
+  <div class="se-container auth-grid">
+    <div class="auth-aside">
+      <p class="se-eyebrow">Akun baru</p>
+      <h1 class="auth-aside__title">Mulai latihan Matematika dan Kosakata hari ini.</h1>
+      <p class="auth-aside__text">
+        Cukup buat akun, lalu pilih materi dari dashboard. Skor setiap jawaban
+        benar tersimpan di akunmu untuk sesi berikutnya.
+      </p>
+      <ul class="auth-aside__list">
+        <li>Matematika</li>
+        <li>Kosakata</li>
+      </ul>
     </div>
-  </main>
-</body>
-</html>
+
+    <section class="auth-panel" aria-labelledby="judul-daftar">
+      <h2 class="auth-panel__title" id="judul-daftar">Buat akun baru</h2>
+      <p class="auth-panel__sub">Isi tiga kolom berikut untuk mulai belajar.</p>
+
+      {% if error %}
+        <div class="se-alert se-alert--error" role="alert">
+          <span class="se-alert__label">Perlu diperbaiki</span>
+          <p class="se-alert__text">{{ error }}</p>
+        </div>
+      {% endif %}
+
+      <form class="auth-form" action="{{ url_for('auth.signup') }}" method="post">
+        {{ form.hidden_tag() }}
+        <div class="se-field">
+          <label class="se-label" for="username">Username</label>
+          {{ form.username(class="se-input", id="username", placeholder="cth: budi123", autocomplete="username", autofocus=true) }}
+        </div>
+        <div class="se-field">
+          <label class="se-label" for="email">Email</label>
+          {{ form.email(class="se-input", id="email", type="email", placeholder="kamu@email.com", autocomplete="email") }}
+        </div>
+        <div class="se-field">
+          <label class="se-label" for="password">Password</label>
+          {{ form.password(class="se-input", id="password", placeholder="Minimal 4 karakter", minlength="4", autocomplete="new-password", aria_describedby="petunjuk-password") }}
+          <p class="se-hint" id="petunjuk-password">Password minimal 4 karakter.</p>
+        </div>
+        <button type="submit" class="se-btn se-btn--primary se-btn--block">Daftar sekarang</button>
+      </form>
+
+      <p class="auth-panel__foot">
+        Sudah punya akun? <a href="{{ url_for('auth.login') }}">Masuk di sini</a>
+      </p>
+    </section>
+  </div>
+</main>
+{% endblock %}

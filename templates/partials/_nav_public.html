@@ -1,0 +1,21 @@
+{# Navigasi bersama untuk halaman publik (belum login). #}
+<header class="se-nav">
+  <div class="se-container se-nav__inner">
+    <a class="se-brand" href="{{ url_for('main.home') }}">
+      <span class="se-brand-mark" aria-hidden="true">R</span>
+      <span>Ribel</span>
+    </a>
+
+    <nav class="se-nav__nav" aria-label="Navigasi utama">
+      <ul class="se-nav__links">
+        <li><a class="se-nav__link" href="#fitur">Fitur</a></li>
+        <li><a class="se-nav__link" href="#cara-kerja">Cara kerja</a></li>
+      </ul>
+    </nav>
+
+    <div class="se-nav__actions">
+      <a class="se-btn se-btn--secondary se-btn--sm" href="{{ url_for('auth.login') }}">Masuk</a>
+      <a class="se-btn se-btn--primary se-btn--sm" href="{{ url_for('auth.signup') }}">Daftar</a>
+    </div>
+  </div>
+</header>
